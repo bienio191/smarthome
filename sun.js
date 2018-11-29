@@ -1,5 +1,7 @@
 const request = require('request');
 
+const config = require('./config');
+
 var getSunriseTime = function(latitude, longitude, date) {
     var dateFormatted = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
 

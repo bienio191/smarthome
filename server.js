@@ -3,12 +3,10 @@ const schedule = require('node-schedule');
 const sun = require('./sun.js');
 const hue = require('./hue.js');
 const logger = require('./logger.js');
-
-const longitude = '20.701697';
-const latitude = '52.447591';
+const config = require('./config');
 
 
-var promise = sun.getSunsetTime(latitude, longitude, new Date());
+var promise = sun.getSunsetTime(config.home_latitude, config.home_longitude, new Date());
 promise.then((time) => {
     var date = new Date(time);
     console.log(date);
@@ -16,7 +14,7 @@ promise.then((time) => {
     console.log(errorMsg);
 });
 
-var promise2 = hue.setState(4, true);
+var promise2 = hue.setState(4, false);
 
 promise2.then((successMsg) => {
     console.log(successMsg);
@@ -29,7 +27,7 @@ promise2.then((successMsg) => {
 
 var task = schedule.scheduleJob(' * * * *', function(){
     logger.log('Job started');
-    
+
 });
 
 
