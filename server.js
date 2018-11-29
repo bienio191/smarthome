@@ -1,33 +1,97 @@
 const schedule = require('node-schedule');
+const express = require('express');
+const hbs = require('hbs');
+const Cache = require('node-cache');
 
 const sun = require('./sun.js');
 const hue = require('./hue.js');
 const logger = require('./logger.js');
 const config = require('./config');
 
+//cache inits
+const myCache = new Cache( { stdTTL: 86400 } );
 
-var promise = sun.getSunsetTime(config.home_latitude, config.home_longitude, new Date());
-promise.then((time) => {
-    var date = new Date(time);
-    console.log(date);
-}, (errorMsg) => {
-    console.log(errorMsg);
+//express inits
+var app = express();
+hbs.registerPartials(__dirname + '/views/partials');
+app.set('view engine', 'hbs');
+
+app.use((req, res, next) => {
+
+    next();
 });
 
-var promise2 = hue.setState(4, false);
+app.use(express.static(__dirname + '/public'));
 
-promise2.then((successMsg) => {
-    console.log(successMsg);
-    return hue.getState(4);
-}).then((state) => {
-    console.log('State after change', state);
-}).catch((errorMsg) => {
-    console.log(errorMsg);
+//hbs initis
+hbs.registerHelper('sayIt', (message) => {
+    return message;
 });
 
-var task = schedule.scheduleJob(' * * * *', function(){
-    logger.log('Job started');
+hbs.registerHelper('sunsetTimeToday', () => {
 
+});
+
+hbs.registerHelper('sunriseTimeToday', () => {
+    return message;
+});
+
+
+//routing
+app.get('/', (req, res) => {
+    res.render('home.hbs', {
+        pageTitle: 'Home Page'
+    });
+});
+
+app.get('/hue', (req, res) => {
+    var sunsetTime = myCache.get('sunsetTime');
+    var sunriseTime = myCache.get('sunriseTime');
+
+    if(sunsetTime != undefined && sunriseTime != undefined) {
+        console.log('Values taken from cache');
+        res.render('hue.hbs', {
+            pageTitle: 'Hue Control',
+            sunriseTime: sunriseTime,
+            sunsetTime: sunsetTime
+        });
+
+    } else {
+
+        var sunsetTime;
+        var sunriseTime;
+
+        var sunsetPromise = sun.getSunsetTime(config.home_latitude, config.home_longitude, new Date());
+        var sunrisePromise = sun.getSunriseTime(config.home_latitude, config.home_longitude, new Date());
+
+        sunsetPromise.then((time) => {
+            var sunsetDate = new Date(time);
+            sunsetTime = sunsetDate.toString();
+            myCache.set('sunsetTime', sunsetTime);
+
+            return sun.getSunriseTime(config.home_latitude, config.home_longitude, new Date());
+        }).then((time) => {
+            var sunriseDate = new Date(time);
+            sunriseTime = sunriseDate.toString();
+            myCache.set('sunriseTime', sunriseTime);
+
+            res.render('hue.hbs', {
+                pageTitle: 'Hue Control',
+                sunriseTime: sunriseTime,
+                sunsetTime: sunsetTime
+            });
+
+        }).catch((errorMsg) => {
+            logger.log(errorMsg);
+        });
+
+    }
+
+});
+
+
+app.listen(3000, () => {
+    console.log('Server is up on port 3000');
 });
 
 
