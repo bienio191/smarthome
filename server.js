@@ -17,24 +17,10 @@ hbs.registerPartials(__dirname + '/views/partials');
 app.set('view engine', 'hbs');
 
 app.use((req, res, next) => {
-
     next();
 });
 
 app.use(express.static(__dirname + '/public'));
-
-//hbs initis
-hbs.registerHelper('sayIt', (message) => {
-    return message;
-});
-
-hbs.registerHelper('sunsetTimeToday', () => {
-
-});
-
-hbs.registerHelper('sunriseTimeToday', () => {
-    return message;
-});
 
 
 //routing
@@ -45,53 +31,87 @@ app.get('/', (req, res) => {
 });
 
 app.get('/hue', (req, res) => {
-    var sunsetTime = myCache.get('sunsetTime');
-    var sunriseTime = myCache.get('sunriseTime');
 
-    if(sunsetTime != undefined && sunriseTime != undefined) {
-        console.log('Values taken from cache');
-        res.render('hue.hbs', {
-            pageTitle: 'Hue Control',
-            sunriseTime: sunriseTime,
-            sunsetTime: sunsetTime
-        });
-
-    } else {
-
-        var sunsetTime;
-        var sunriseTime;
-
-        var sunsetPromise = sun.getSunsetTime(config.home_latitude, config.home_longitude, new Date());
-        var sunrisePromise = sun.getSunriseTime(config.home_latitude, config.home_longitude, new Date());
-
-        sunsetPromise.then((time) => {
-            var sunsetDate = new Date(time);
-            sunsetTime = sunsetDate.toString();
-            myCache.set('sunsetTime', sunsetTime);
-
-            return sun.getSunriseTime(config.home_latitude, config.home_longitude, new Date());
-        }).then((time) => {
-            var sunriseDate = new Date(time);
-            sunriseTime = sunriseDate.toString();
-            myCache.set('sunriseTime', sunriseTime);
-
-            res.render('hue.hbs', {
-                pageTitle: 'Hue Control',
-                sunriseTime: sunriseTime,
-                sunsetTime: sunsetTime
-            });
-
-        }).catch((errorMsg) => {
-            logger.log(errorMsg);
-        });
-
-    }
+    res.render('hue.hbs', {
+        pageTitle: 'Hue Control',
+        sunriseTime: myCache.get('sunriseTime').toLocaleTimeString(),
+        sunsetTime: myCache.get('sunsetTime').toLocaleTimeString(),
+        pigBulbState: myCache.get('pigBulbState')
+    });   
 
 });
 
+/////////////
+//cache logic
+/////////////
 
+//run every day 12 am
+var dailyCacheJob = schedule.scheduleJob('0 0 0 * * ?', () => {
+
+    var sunsetPromise = sun.getSunsetTimeAsync(config.home_latitude, config.home_longitude, new Date());
+    var sunrisePromise = sun.getSunriseTimeAsync(config.home_latitude, config.home_longitude, new Date());
+
+    sunsetPromise.then((time) => {
+        var sunsetDate = new Date(time);
+        myCache.set('sunsetTime', sunsetDate);
+        logger.log(`sunsetTime in cache reloaded, new value: ${sunsetDate}`);
+    }).catch((errorMsg) => {
+        logger.log(errorMsg);
+    });
+
+    sunrisePromise.then((time) => {
+        var sunriseDate = new Date(time);
+        myCache.set('sunriseTime', sunriseDate);
+        logger.log(`sunsetTime in cache reloaded, new value: ${sunriseDate}`);
+    }).catch((errorMsg) => {
+        logger.log(errorMsg);
+    });
+
+});
+
+//run every 1 min
+var freqCacheJob = schedule.scheduleJob('*/1 * * * *', () => {
+    var pigBulbStatePromise = hue.getStateAsync(1);
+
+    pigBulbStatePromise.then((state) => {
+        myCache.set('pigBulbState', state);
+        logger.log(`pigBulbState in cache reloaded, new value: ${state}`);
+    }).catch((errorMsg) => {
+        logger.log(errorMsg);
+    });
+    
+});
+
+/////////////
+//jobs
+/////////////
+
+var pigBulbJob = schedule.scheduleJob('*/1 * * * *', () => {
+    var now = new Date();
+    if(myCache.get('sunsetTime') < now && config.sleep_hour > now.getHours()) {
+        if(myCache.get('pigBulbState') == false) {
+            logger.log(`pigBulbJob checked, bulb turned on`);
+            hue.setStateAsync(1, true);
+            hue.setBrightnessAsync(1, 85);
+        }
+    } else {
+        if (myCache.get('pigBulbState') == true) {
+            logger.log(`pigBulbJob checked, bulb turned off`);
+            hue.setStateAsync(1, false);
+        } 
+    }
+    
+});
+
+
+/////////////
+//run server
+/////////////
 app.listen(3000, () => {
     console.log('Server is up on port 3000');
+    freqCacheJob.invoke();
+    dailyCacheJob.invoke();
+
 });
 
 
