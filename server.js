@@ -46,7 +46,7 @@ app.get('/hue', (req, res) => {
 });
 
 /////////////
-//cache logic taaa
+//cache logic
 /////////////
 
 //run every day 2 am
