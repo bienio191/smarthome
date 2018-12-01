@@ -32,6 +32,10 @@ app.get('/', (req, res) => {
 
 app.get('/hue', (req, res) => {
 
+    if(myCache.get('sunriseTime') == undefined || myCache.get('sunsetTime') == undefined || myCache.get('pigBulbState') == undefined) {
+        initCache();
+    }
+
     res.render('hue.hbs', {
         pageTitle: 'Hue Control',
         sunriseTime: myCache.get('sunriseTime').toLocaleTimeString(),
@@ -45,8 +49,8 @@ app.get('/hue', (req, res) => {
 //cache logic
 /////////////
 
-//run every day 12 am
-var dailyCacheJob = schedule.scheduleJob('0 0 0 * * ?', () => {
+//run every day 2 am
+var dailyCacheJob = schedule.scheduleJob('0 2 * * *', () => {
 
     var sunsetPromise = sun.getSunsetTimeAsync(config.home_latitude, config.home_longitude, new Date());
     var sunrisePromise = sun.getSunriseTimeAsync(config.home_latitude, config.home_longitude, new Date());
@@ -69,9 +73,9 @@ var dailyCacheJob = schedule.scheduleJob('0 0 0 * * ?', () => {
 
 });
 
-//run every 1 min
-var freqCacheJob = schedule.scheduleJob('*/1 * * * *', () => {
-    var pigBulbStatePromise = hue.getStateAsync(1);
+//run every 5 min
+var freqCacheJob = schedule.scheduleJob('*/5 * * * *', () => {
+    var pigBulbStatePromise = hue.getStateAsync(config.pig_bulb_id);
 
     pigBulbStatePromise.then((state) => {
         myCache.set('pigBulbState', state);
@@ -86,18 +90,18 @@ var freqCacheJob = schedule.scheduleJob('*/1 * * * *', () => {
 //jobs
 /////////////
 
-var pigBulbJob = schedule.scheduleJob('*/1 * * * *', () => {
+var pigBulbJob = schedule.scheduleJob('*/5 * * * *', () => {
     var now = new Date();
     if(myCache.get('sunsetTime') < now && config.sleep_hour > now.getHours()) {
         if(myCache.get('pigBulbState') == false) {
             logger.log(`pigBulbJob checked, bulb turned on`);
-            hue.setStateAsync(1, true);
-            hue.setBrightnessAsync(1, 85);
+            hue.setStateAsync(config.pig_bulb_id, true);
+            hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
         }
     } else {
         if (myCache.get('pigBulbState') == true) {
             logger.log(`pigBulbJob checked, bulb turned off`);
-            hue.setStateAsync(1, false);
+            hue.setStateAsync(config.pig_bulb_id, false);
         } 
     }
     
@@ -107,11 +111,16 @@ var pigBulbJob = schedule.scheduleJob('*/1 * * * *', () => {
 /////////////
 //run server
 /////////////
+
+var initCache = () => {
+    myCache.set('sunriseTime', sun.getSunriseTime(config.home_latitude, config.home_longitude, new Date()));
+    myCache.set('sunsetTime', sun.getSunsetTime(config.home_latitude, config.home_longitude, new Date()));
+    myCache.set('pigBulbState', hue.getState(config.pig_bulb_id));
+};
+
 app.listen(3000, () => {
     console.log('Server is up on port 3000');
-    freqCacheJob.invoke();
-    dailyCacheJob.invoke();
-
+    initCache();
 });
 
 
