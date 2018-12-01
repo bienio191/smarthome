@@ -51,23 +51,8 @@ var getStateAsync = function(id) {
     });
 }
 
-var getState = function(id) {
-    request({
-        url: `${config.hue_host}/api/${config.hue_user_id}/lights/${id}`,
-        method: 'GET',
-        json: true
-    }, (error, response, body) => {
-        if(error) {
-            logger.log('Error thrown from getState');
-        } else {
-            return body.state.on;
-        }
-    });
-};
-
 module.exports = {
     setStateAsync,
     getStateAsync,
-    getState,
     setBrightnessAsync
 };

@@ -32,10 +32,6 @@ app.get('/', (req, res) => {
 
 app.get('/hue', (req, res) => {
 
-    if(myCache.get('sunriseTime') == undefined || myCache.get('sunsetTime') == undefined || myCache.get('pigBulbState') == undefined) {
-        initCache();
-    }
-
     res.render('hue.hbs', {
         pageTitle: 'Hue Control',
         sunriseTime: myCache.get('sunriseTime').toLocaleTimeString(),
@@ -44,6 +40,8 @@ app.get('/hue', (req, res) => {
     });   
 
 });
+
+
 
 /////////////
 //cache logic
@@ -108,19 +106,17 @@ var pigBulbJob = schedule.scheduleJob('*/5 * * * *', () => {
 });
 
 
+
 /////////////
 //run serverr
 /////////////
 
-var initCache = () => {
-    myCache.set('sunriseTime', sun.getSunriseTime(config.home_latitude, config.home_longitude, new Date()));
-    myCache.set('sunsetTime', sun.getSunsetTime(config.home_latitude, config.home_longitude, new Date()));
-    myCache.set('pigBulbState', hue.getState(config.pig_bulb_id));
-};
 
 app.listen(3000, () => {
     console.log('Server is up on port 3000');
-    initCache();
+    dailyCacheJob.invoke();
+    freqCacheJob.invoke();
+
 });
 
 
