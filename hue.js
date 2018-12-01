@@ -1,6 +1,6 @@
 const request = require('request');
 
-const config = require('./config');
+const config = require('./config.json');
 const logger = require('./logger.js');
 
 var setStateAsync = function(id, state) {

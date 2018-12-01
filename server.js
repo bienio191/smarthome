@@ -6,7 +6,7 @@ const Cache = require('node-cache');
 const sun = require('./sun.js');
 const hue = require('./hue.js');
 const logger = require('./logger.js');
-const config = require('./config');
+const config = require('./config.json');
 
 //cache inits
 const myCache = new Cache( { stdTTL: 86400 } );
