@@ -109,7 +109,7 @@ var pigBulbJob = schedule.scheduleJob('*/5 * * * *', () => {
 
 
 /////////////
-//run serverr
+//run server
 /////////////
 
 var initCache = () => {
