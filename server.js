@@ -7,6 +7,7 @@ const sun = require('./sun.js');
 const hue = require('./hue.js');
 const logger = require('./logger.js');
 const config = require('./config.js');
+const utils = require('./utils.js');
 
 //cache inits
 const myCache = new Cache( { stdTTL: 86400 } );
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
 app.use(express.static(__dirname + '/public'));
 
 
-//routinga
+//routing
 app.get('/', (req, res) => {
     res.render('home.hbs', {
         pageTitle: 'Home Page'
@@ -31,6 +32,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/hue', (req, res) => {
+
+    if(myCache.get('sunriseTime') == null || myCache.get('sunriseTime') == undefined || 
+        myCache.get('sunsetTime') == null || myCache.get('sunsetTime') == undefined ||
+        myCache.get('pigBulbState') == null || myCache.get('pigBulbState') == undefined) {
+
+        cacheReoload();
+    }
 
     res.render('hue.hbs', {
         pageTitle: 'Hue Control',
@@ -41,6 +49,15 @@ app.get('/hue', (req, res) => {
 
 });
 
+app.get('/cache', (req, res) => {
+    var keys =  myCache.keys();
+    var myMap = new Map();
+    for(var i=0; i<keys.length; i++) {
+        myMap.set(keys[i], myCache.get(keys[i]));
+    }
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(utils.strMapToObj(myMap)));
+});
 
 
 /////////////
@@ -71,8 +88,15 @@ var dailyCacheJob = schedule.scheduleJob('0 2 * * *', () => {
 
 });
 
-//run every 5 min
-var freqCacheJob = schedule.scheduleJob('*/5 * * * *', () => {
+var cacheReoload = () => {
+    dailyCacheJob.invoke();
+    freqCacheJob.invoke();
+}
+
+//run every 1 min
+var freqCacheJob = schedule.scheduleJob('*/1 * * * *', () => {
+
+    //bulb state
     var pigBulbStatePromise = hue.getStateAsync(config.pig_bulb_id);
 
     pigBulbStatePromise.then((state) => {
@@ -88,7 +112,7 @@ var freqCacheJob = schedule.scheduleJob('*/5 * * * *', () => {
 //jobs
 /////////////
 
-var pigBulbJob = schedule.scheduleJob('*/5 * * * *', () => {
+var pigBulbJob = schedule.scheduleJob('*/1 * * * *', () => {
     var now = new Date();
     if(myCache.get('sunsetTime') < now && config.sleep_hour > now.getHours()) {
         if(myCache.get('pigBulbState') == false) {
@@ -106,16 +130,14 @@ var pigBulbJob = schedule.scheduleJob('*/5 * * * *', () => {
 });
 
 
-
 /////////////
 //run serverr
 /////////////
 
 
 app.listen(3000, () => {
-    console.log('Server is up on port 3000');
-    dailyCacheJob.invoke();
-    freqCacheJob.invoke();
+    logger.log('Server is up on port 3000');
+    cacheReoload();
 
 });
 
