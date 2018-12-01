@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 app.use(express.static(__dirname + '/public'));
 
 
-//routing
+//routinga
 app.get('/', (req, res) => {
     res.render('home.hbs', {
         pageTitle: 'Home Page'
