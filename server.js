@@ -93,8 +93,8 @@ var cacheReoload = () => {
     freqCacheJob.invoke();
 }
 
-//run every 1 min
-var freqCacheJob = schedule.scheduleJob('*/1 * * * *', () => {
+//run every 5 min
+var freqCacheJob = schedule.scheduleJob('*/5 * * * *', () => {
 
     //bulb state
     var pigBulbStatePromise = hue.getStateAsync(config.pig_bulb_id);
@@ -112,7 +112,7 @@ var freqCacheJob = schedule.scheduleJob('*/1 * * * *', () => {
 //jobs
 /////////////
 
-var pigBulbJob = schedule.scheduleJob('*/1 * * * *', () => {
+var pigBulbJob = schedule.scheduleJob('*/5 * * * *', () => {
     var now = new Date();
     if(myCache.get('sunsetTime') < now && config.sleep_hour > now.getHours()) {
         if(myCache.get('pigBulbState') == false) {
