@@ -31,8 +31,8 @@
             $.ajax({
                 url: '/cache', 
                 success: function(data) {
-                    console.log(data.pigBulbState);
-                    $("#pigBulbState").html(data.pigBulbState);
+                    var state = data.pigBulbState ? 'ON' : 'OFF';
+                    $("#pigBulbState").html(state);
                     $("#sunriseTime").html(new Date(data.sunriseTime).toLocaleTimeString());
                     $("#sunsetTime").html(new Date(data.sunsetTime).toLocaleTimeString());
                     $("#lastRefresh").html(new Date().toLocaleTimeString());
