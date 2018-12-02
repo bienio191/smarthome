@@ -125,7 +125,7 @@ var pigBulbJob = schedule.scheduleJob('*/10 * * * * *', () => {
             hue.setStateAsync(config.pig_bulb_id, true);
             hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
         } else {
-            hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness); //stupit, to check if bri is ok and only then set it
+            
         }
     } else {
         if (myCache.get('pigBulbState') == true) {
