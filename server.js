@@ -94,7 +94,7 @@ var cacheReoload = () => {
     freqCacheJob.invoke();
 }
 
-//run every 1 min
+//run every 5 sec
 var freqCacheJob = schedule.scheduleJob('*/5 * * * * *', () => {
 
     //bulb state
@@ -102,6 +102,11 @@ var freqCacheJob = schedule.scheduleJob('*/5 * * * * *', () => {
 
     pigBulbStatePromise.then((state) => {
         myCache.set('pigBulbState', state);
+        if(state) {
+            myCache.set('pigBulbLastSeenOn', new Date());
+        } else {
+            myCache.set('pigBulbLastSeenOff', new Date());
+        }
     }).catch((errorMsg) => {
         logger.log(errorMsg);
     });

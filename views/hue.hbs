@@ -3,45 +3,107 @@
     <head>
         <meta charset="utf-8">
         <title>{{pageTitle}}</title>
-        <script src="/jquery/jquery.js"></script>       
+        <script src="/jquery/jquery.js"></script>    
+        <style>
+            .stat div {
+                display: inline-block;
+            }
+            .stat > div {
+                width: 200px;
+                margin-left: 50px;
+                margin-bottom: 10px;
+            }
+
+            #lastSeen {
+                color: blue;
+            }
+
+            .label {
+                font-weight:  bold;
+            }
+        </style>   
     </head>
     <body>
 
         <div>
-            <div>
-                <p>Sunrise time in your place:</p>
-                <p id="sunriseTime">{{sunriseTime}}</p>
+
+            <div class="stat">
+                <div>
+                    <div class="label">Sunrise time in your place:</div>
+                </div>
+                <div>
+                    <div id="sunriseTime">{{sunriseTime}}</div>
+                </div>
             </div>
-            <div>
-                <p>Sunset time in your place:</p>
-                <p id="sunsetTime">{{sunsetTime}}</p>
+
+            <div class="stat">
+                <div>
+                    <div class="label">Sunset time in your place:</div>
+                </div>
+                <div>
+                    <div id="sunsetTime">{{sunsetTime}}</div>
+                </div>
             </div>
-            <div>
-                <p>Pigs' bulb state:</p>
-                <p id="pigBulbState">{{pigBulbState}}</p>
+
+            <div class="stat">
+                <div>
+                    <div class="label">Pigs' bulb state:</div>
+                </div>
+                <div>
+                    <div id="pigBulbState">{{pigBulbState}}</div>
+                    <div id="lastSeen"></div>
+                </div>
             </div>
-            <div>
-                <p>Last refresh</p>
-                <p id="lastRefresh"></p>
+
+            <div class="stat">
+                <div>
+                    <div class="label">Last refresh:</div>
+                </div>
+                <div>
+                    <div id="lastRefresh"></div>
+                </div>
             </div>
+
         </div>
 
         <script>
+
+        var formatDate = (date) => {
+            if(date != undefined && date != null) {
+                return new Date(date).toLocaleTimeString();
+            } else {
+                return 'Never';
+            }
+        };
+
         $(function worker(){
             $.ajax({
                 url: '/cache', 
                 success: function(data) {
-                    var state = data.pigBulbState ? 'ON' : 'OFF';
-                    $("#pigBulbState").html(state);
-                    $("#sunriseTime").html(new Date(data.sunriseTime).toLocaleTimeString());
-                    $("#sunsetTime").html(new Date(data.sunsetTime).toLocaleTimeString());
-                    $("#lastRefresh").html(new Date().toLocaleTimeString());
+
+                    var lastSeen = data.pigBulbState ? '(Last seen Off:' + formatDate(data.pigBulbLastSeenOff) + ')' 
+                        : '(Last seen On: ' + formatDate(data.pigBulbLastSeenOn) + ')';
+
+                    $("#lastSeen").html(lastSeen);
+                    $("#sunriseTime").html(formatDate(data.sunriseTime));
+                    $("#sunsetTime").html(formatDate(data.sunsetTime));
+                    $("#lastRefresh").html(formatDate(new Date()));
+
+                    if(data.pigBulbState) {
+                        $("#pigBulbState").html('On');
+                        $("#pigBulbState").css('color', 'green');    
+                    } else {
+                        $("#pigBulbState").html('Off');
+                        $("#pigBulbState").css('color', 'red');
+                    }
+
                 },
                 complete: function() {
                     setTimeout(worker, 5*1000);
                 }
             });
         });
+
         </script>
 
     </body>
