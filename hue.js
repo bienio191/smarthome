@@ -8,7 +8,7 @@ var setStateAsync = function(id, state) {
         request({
             url: `${config.hue_host}/api/${config.hue_user_id}/lights/${id}/state`,
             method: 'PUT',
-            json: {on: state}
+            json: {"on": state}
         }, (error, response, body) => {
             if(error) {
                reject('Error thrown from setState');
@@ -24,7 +24,7 @@ var setBrightnessAsync = function(id, bri) {
         request({
             url: `${config.hue_host}/api/${config.hue_user_id}/lights/${id}/state`,
             method: 'PUT',
-            json: {bri: bri}
+            json: {"bri": bri}
         }, (error, response, body) => {
             if(error) {
                reject('Error thrown from setBrightnessAsync');
