@@ -13,11 +13,11 @@
                 <p id="sunriseTime">{{sunriseTime}}</p>
             </div>
             <div>
-                <p>Sunrise time in your place:</p>
+                <p>Sunset time in your place:</p>
                 <p id="sunsetTime">{{sunsetTime}}</p>
             </div>
             <div>
-                <p>Sunrise time in your place:</p>
+                <p>Pigs' bulb state:</p>
                 <p id="pigBulbState">{{pigBulbState}}</p>
             </div>
             <div>
@@ -31,6 +31,7 @@
             $.ajax({
                 url: '/cache', 
                 success: function(data) {
+                    console.log(data.pigBulbState);
                     $("#pigBulbState").html(data.pigBulbState);
                     $("#sunriseTime").html(new Date(data.sunriseTime).toLocaleTimeString());
                     $("#sunsetTime").html(new Date(data.sunsetTime).toLocaleTimeString());
