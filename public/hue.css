@@ -1,0 +1,16 @@
+.stat div {
+    display: inline-block;
+}
+.stat > div {
+    width: 200px;
+    margin-left: 50px;
+    margin-bottom: 10px;
+}
+
+#lastSeen {
+    color: blue;
+}
+
+.label {
+    font-weight:  bold;
+}
