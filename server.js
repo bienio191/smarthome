@@ -122,18 +122,10 @@ var pigBulbJob = schedule.scheduleJob('*/10 * * * * *', () => {
     if(myCache.get('sunsetTime') < now && config.sleep_hour > now.getHours()) {
         if(myCache.get('pigBulbState') == false) {
             logger.log(`pigBulbJob checked, bulb turned on`);
-            var setStatePromise = hue.setStateAsync(config.pig_bulb_id, true);
-
-            setStatePromise.then((msg) => {
-                hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
-            }).then((msg) => {
-                logger.log(`pigBulbJob checked, brightness set`);
-            }).catch((errorMsg) => {
-                logger.log(errorMsg);
-            });
-
+            hue.setStateAsync(config.pig_bulb_id, true);
+            hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
         } else {
-
+            hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness); //stupit, to check if bri is ok and only then set it
         }
     } else {
         if (myCache.get('pigBulbState') == true) {
