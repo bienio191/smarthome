@@ -9,8 +9,6 @@ var formatDate = (date) => {
 var detectChange = (divId, newValue) => {
     var oldValue = $("#" + divId).text();
     if (newValue != oldValue) {
-        console.log('newValue', newValue);
-        console.log('oldValue', oldValue);
         return true;
     }
     return false;
