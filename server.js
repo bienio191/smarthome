@@ -126,6 +126,8 @@ var pigBulbJob = schedule.scheduleJob('*/10 * * * * *', () => {
 
             setStatePromise.then((msg) => {
                 hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
+            }).then((msg) => {
+                logger.log(`pigBulbJob checked, brightness set`);
             }).catch((errorMsg) => {
                 logger.log(errorMsg);
             });
