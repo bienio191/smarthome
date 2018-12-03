@@ -20,7 +20,7 @@ var setStateAsync = function(id, state) {
 }
 
 var setBrightnessAsync = function(id, bri) {
-    var briStr = `"${bri}"`;
+    var briStr = '"' + bri + '"';
     return new Promise((resolve, reject) => {
         request({
             url: `${config.hue_host}/api/${config.hue_user_id}/lights/${id}/state`,
@@ -31,7 +31,7 @@ var setBrightnessAsync = function(id, bri) {
             if(error) {
                reject('Error thrown from setBrightnessAsync');
             } else {
-                resolve(`Brightness changed successfully to ${bri}`);
+                resolve(`Brightness changed successfully to ${briStr}`);
             }
         });
     });
