@@ -26,7 +26,7 @@ var setBrightnessAsync = function(id, bri) {
             method: 'PUT',
             json: {"bri": bri}
         }, (error, response, body) => {
-            logger.log(body);
+            logger.log(JSON.stringify(body));
             if(error) {
                reject('Error thrown from setBrightnessAsync');
             } else {
