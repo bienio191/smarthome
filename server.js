@@ -36,7 +36,8 @@ app.get('/hue', (req, res) => {
 
     if(myCache.get('sunriseTime') == null || myCache.get('sunriseTime') == undefined || 
         myCache.get('sunsetTime') == null || myCache.get('sunsetTime') == undefined ||
-        myCache.get('pigBulbState') == null || myCache.get('pigBulbState') == undefined) {
+        myCache.get('pigBulbState') == null || myCache.get('pigBulbState') == undefined ||
+        myCache.get('pigBulbBrightness') == null || myCache.get('pigBulbBrightness') == undefined) {
 
         cacheReoload();
     }
@@ -45,7 +46,8 @@ app.get('/hue', (req, res) => {
         pageTitle: 'Hue Control',
         sunriseTime: myCache.get('sunriseTime').toLocaleTimeString(),
         sunsetTime: myCache.get('sunsetTime').toLocaleTimeString(),
-        pigBulbState: myCache.get('pigBulbState')
+        pigBulbState: myCache.get('pigBulbState'),
+        pigBulbBrightness: myCache.get('pigBulbBrightness')
     });   
 
 });
@@ -110,6 +112,16 @@ var freqCacheJob = schedule.scheduleJob('*/5 * * * * *', () => {
     }).catch((errorMsg) => {
         logger.log(errorMsg);
     });
+
+
+    //bulb brightness
+    var pigBulbBrightnessPromise = hue.getBrightnessAsync(config.pig_bulb_id);
+
+    pigBulbBrightnessPromise.then((bri) => {
+        myCache.set('pigBulbBrightness', bri);
+    }).catch((errorMsg) => {
+        logger.log(errorMsg);
+    });
     
 });
 
@@ -123,17 +135,13 @@ var pigBulbJob = schedule.scheduleJob('*/10 * * * * *', () => {
 
         if(myCache.get('pigBulbState') == false) {
             logger.log(`pigBulbJob checked, bulb turned on`);
-            var setStatePromise = hue.setStateAsync(config.pig_bulb_id, true);
+            hue.setStateAsync(config.pig_bulb_id, true);
+        } 
 
-            setStatePromise.then(() => {
-                return hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
-            }).catch((errorMsg) => {
-                logger.log(errorMsg);
-            });
-
-        } else {
-            
+        if(myCache.get('pigBulbBrightness') != config.pig_bulb_brightness) {
+            hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
         }
+        
     } else {
         if (myCache.get('pigBulbState') == true) {
             logger.log(`pigBulbJob checked, bulb turned off`);

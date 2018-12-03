@@ -51,8 +51,25 @@ var getStateAsync = function(id) {
     });
 }
 
+var getBrightnessAsync = function(id) {
+    return new Promise((resolve, reject) => {
+        request({
+            url: `${config.hue_host}/api/${config.hue_user_id}/lights/${id}`,
+            method: 'GET',
+            json: true
+        }, (error, response, body) => {
+            if(error) {
+               reject('Error thrown from getState');
+            } else {
+                resolve(body.state.bri);
+            }
+        });
+    });
+}
+
 module.exports = {
     setStateAsync,
     getStateAsync,
-    setBrightnessAsync
+    setBrightnessAsync,
+    getBrightnessAsync
 };
