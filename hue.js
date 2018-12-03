@@ -25,7 +25,7 @@ var setBrightnessAsync = function(id, bri) {
         request({
             url: `${config.hue_host}/api/${config.hue_user_id}/lights/${id}/state`,
             method: 'PUT',
-            json: {"bri": "85"}
+            json: {"bri": 85}
         }, (error, response, body) => {
             logger.log(JSON.stringify(body));
             if(error) {
