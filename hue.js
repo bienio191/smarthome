@@ -27,7 +27,7 @@ var setBrightnessAsync = function(id, bri) {
             json: {"bri": "s"} //parseInt(bri)
         }, (error, response, body) => {
             logger.log(JSON.stringify(body));
-            if(error || body.hasOwnProperty('error')) {
+            if(error || JSON.stringify(body).includes('error')) {
                reject('Error thrown from setBrightnessAsync');
             } else {
                 resolve(`Brightness changed successfully to ${bri}`);
