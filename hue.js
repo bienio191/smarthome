@@ -10,7 +10,7 @@ var setStateAsync = function(id, state) {
             method: 'PUT',
             json: {"on": state}
         }, (error, response, body) => {
-            if(error) {
+            if(error || JSON.stringify(body).includes('error')) {
                reject('Error thrown from setState');
             } else {
                 resolve('State changed successfully');
@@ -24,7 +24,7 @@ var setBrightnessAsync = function(id, bri) {
         request({
             url: `${config.hue_host}/api/${config.hue_user_id}/lights/${id}/state`,
             method: 'PUT',
-            json: {"bri": "s"} //parseInt(bri)
+            json: {"bri": parseInt(bri)}
         }, (error, response, body) => {
             logger.log(JSON.stringify(body));
             if(error || JSON.stringify(body).includes('error')) {
@@ -43,7 +43,7 @@ var getStateAsync = function(id) {
             method: 'GET',
             json: true
         }, (error, response, body) => {
-            if(error) {
+            if(error || JSON.stringify(body).includes('error')) {
                reject('Error thrown from getState');
             } else {
                 resolve(body.state.on);
@@ -59,7 +59,7 @@ var getBrightnessAsync = function(id) {
             method: 'GET',
             json: true
         }, (error, response, body) => {
-            if(error) {
+            if(error || JSON.stringify(body).includes('error')) {
                reject('Error thrown from getState');
             } else {
                 resolve(body.state.bri);
