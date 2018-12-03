@@ -29,7 +29,7 @@ var setBrightnessAsync = function(id, bri) {
             if(error) {
                reject('Error thrown from setBrightnessAsync');
             } else {
-                resolve('Brightness changed successfully');
+                resolve(`Brightness changed successfully to ${bri}`);
             }
         });
     });
