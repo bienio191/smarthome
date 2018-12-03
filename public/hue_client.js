@@ -56,7 +56,7 @@ $(function worker(){
 
             if(detectChange('pigBulbBrightness', newBulbBri)) {
                 animate($("#pigBulbBrightness"), 6);
-                $("#pigBulbBrightness").html(newBulbState);
+                $("#pigBulbBrightness").html(newBulbBri);
             }
 
             $("#lastRefresh").html(formatDate(new Date()));
