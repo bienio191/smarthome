@@ -32,6 +32,7 @@ $(function worker(){
             var newSunriseTime = formatDate(data.sunriseTime);
             var newSunsetTime = formatDate(data.sunsetTime);
             var newBulbState = data.pigBulbState ? 'On' : 'Off';
+            var newBulbBri = data.pigBulbBrightness;
 
             if(detectChange('lastSeen', newLastSeen)) {
                 animate($("#lastSeen"), 6);
@@ -51,6 +52,11 @@ $(function worker(){
             if(detectChange('pigBulbState', newBulbState)) {
                 animate($("#pigBulbState"), 6);
                 $("#pigBulbState").html(newBulbState);
+            }
+
+            if(detectChange('pigBulbBrightness', newBulbBri)) {
+                animate($("#pigBulbBrightness"), 6);
+                $("#pigBulbBrightness").html(newBulbState);
             }
 
             $("#lastRefresh").html(formatDate(new Date()));
