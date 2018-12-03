@@ -65,8 +65,8 @@ app.get('/cache', (req, res) => {
 //cache logic
 /////////////
 
-//run every day 2 am
-var dailyCacheJob = schedule.scheduleJob('0 2 * * *', () => {
+//run every day 12 am
+var dailyCacheJob = schedule.scheduleJob('0 0 0 * * *', () => {
 
     var sunsetPromise = sun.getSunsetTimeAsync(config.home_latitude, config.home_longitude, new Date());
     var sunrisePromise = sun.getSunriseTimeAsync(config.home_latitude, config.home_longitude, new Date());
@@ -114,16 +114,23 @@ var freqCacheJob = schedule.scheduleJob('*/5 * * * * *', () => {
 });
 
 /////////////
-//jobss
+//job
 /////////////
 
 var pigBulbJob = schedule.scheduleJob('*/10 * * * * *', () => {
     var now = new Date();
     if(myCache.get('sunsetTime') < now && config.sleep_hour > now.getHours()) {
+
         if(myCache.get('pigBulbState') == false) {
             logger.log(`pigBulbJob checked, bulb turned on`);
-            hue.setStateAsync(config.pig_bulb_id, true);
-            hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
+            var setStatePromise = hue.setStateAsync(config.pig_bulb_id, true);
+
+            setStatePromise.then(() => {
+                return hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
+            }).catch((errorMsg) => {
+                logger.log(errorMsg);
+            });
+
         } else {
             
         }
