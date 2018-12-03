@@ -140,6 +140,9 @@ var pigBulbJob = schedule.scheduleJob('*/10 * * * * *', () => {
 
         if(myCache.get('pigBulbBrightness') != config.pig_bulb_brightness) {
             hue.setBrightnessAsync(config.pig_bulb_id, config.pig_bulb_brightness);
+            logger.log(`pigBulbJob checked, bulb bri set to ${config.pig_bulb_brightnes}`);
+            logger.log(myCache.get('pigBulbBrightness'));
+            logger.log(config.pig_bulb_brightness);
         }
         
     } else {
