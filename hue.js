@@ -20,11 +20,12 @@ var setStateAsync = function(id, state) {
 }
 
 var setBrightnessAsync = function(id, bri) {
+    var briStr = `"${bri}"`;
     return new Promise((resolve, reject) => {
         request({
             url: `${config.hue_host}/api/${config.hue_user_id}/lights/${id}/state`,
             method: 'PUT',
-            json: {"bri": bri}
+            json: {"bri": briStr}
         }, (error, response, body) => {
             logger.log(JSON.stringify(body));
             if(error) {
