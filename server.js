@@ -14,9 +14,11 @@ const myCache = new Cache();
 
 //express inits
 var app = express();; 
+var router = express.Router(); 
 hbs.registerPartials(__dirname + '/views/partials');
 app.set('view engine', 'hbs');
 
+app.use('/api', router);
 app.use((req, res, next) => {
     next();
 });
@@ -68,11 +70,11 @@ app.post('/api/temperatures').post( (req, res) => {
     res.sendStatus(200);
 });
 
-// router.route('/temperatures').post( (req, res) => {
-//     logger.log('Temperature called');
-//     logger.log(JSON.stringify(req.body));
-//     res.sendStatus(200);
-// });
+router.route('/temperatures').post( (req, res) => {
+    logger.log('Temperature called');
+    logger.log(JSON.stringify(req.body));
+    res.sendStatus(200);
+});
 
 
 /////////////
