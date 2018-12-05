@@ -65,18 +65,9 @@ app.get('/cache', (req, res) => {
     res.send(JSON.stringify(utils.strMapToObj(myMap)));
 });
 
-app.post('/api/temperatures').post( (req, res) => {
-    logger.log('Temperature called');
-    logger.log(JSON.stringify(req.body));
-    res.sendStatus(200);
-});
-
 router.route('/temperatures').post( (req, res) => {
     logger.log('Temperature called');
-    logger.log(req.body.roomName);
-    logger.log(JSON.stringify(req.body));
-    logger.log(JSON.parse(req.body));
-    res.sendStatus(200);
+    logger.log(req.body.roomName + ":" + req.body.temperature);
 });
 
 
