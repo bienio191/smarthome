@@ -19,7 +19,6 @@ hbs.registerPartials(__dirname + '/views/partials');
 app.set('view engine', 'hbs');
 
 app.use((req, res, next) => {
-    logger.log(`${req.method} ${req.originalUrl}`);
     next();
 });
 
@@ -79,7 +78,7 @@ app.get('/api', (req, res) => {
 
 router.route('/temperatures').post( (req, res) => {
     logger.log('Temperature called');
-    logger.log(res.body);
+    logger.log(JSON.stringify(res.body));
 });
 
 
