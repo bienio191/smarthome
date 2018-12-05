@@ -18,14 +18,14 @@ var router = express.Router();
 hbs.registerPartials(__dirname + '/views/partials');
 app.set('view engine', 'hbs');
 
-app.use('/api', router);
 app.use((req, res, next) => {
     next();
 });
 
 app.use(express.static(__dirname + '/public'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
-
+app.use(express.bodyParser());
+app.use('/api', router);
 
 //standard routing
 app.get('/', (req, res) => {
