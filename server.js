@@ -19,6 +19,7 @@ hbs.registerPartials(__dirname + '/views/partials');
 app.set('view engine', 'hbs');
 
 app.use((req, res, next) => {
+    logger.log(`${req.method} ${req.originalUrl}`);
     next();
 });
 
