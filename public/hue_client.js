@@ -33,6 +33,7 @@ $(function worker(){
             var newSunsetTime = formatDate(data.sunsetTime);
             var newBulbState = data.pigBulbState ? 'On' : 'Off';
             var newBulbBri = data.pigBulbBrightness;
+            var newPigTemperature = data.pigRoomTemperature;
 
             if(detectChange('lastSeen', newLastSeen)) {
                 animate($("#lastSeen"), 6);
@@ -57,6 +58,11 @@ $(function worker(){
             if(detectChange('pigBulbBrightness', newBulbBri)) {
                 animate($("#pigBulbBrightness"), 6);
                 $("#pigBulbBrightness").html(newBulbBri);
+            }
+
+            if(detectChange('pigRoomTemperature', newPigTemperature)) {
+                animate($("#pigRoomTemperature"), 6);
+                $("#pigRoomTemperature").html(newPigTemperature);
             }
 
             $("#lastRefresh").html(formatDate(new Date()));

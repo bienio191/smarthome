@@ -50,7 +50,8 @@ app.get('/hue', (req, res) => {
         sunriseTime: myCache.get('sunriseTime').toLocaleTimeString(),
         sunsetTime: myCache.get('sunsetTime').toLocaleTimeString(),
         pigBulbState: myCache.get('pigBulbState'),
-        pigBulbBrightness: myCache.get('pigBulbBrightness')
+        pigBulbBrightness: myCache.get('pigBulbBrightness'),
+        pigRoomTemperature: myCache.get('pigRoomTemperature')
     });   
 
 });
@@ -66,8 +67,8 @@ app.get('/cache', (req, res) => {
 });
 
 router.route('/temperatures').post( (req, res) => {
-    logger.log('Temperature called');
     logger.log(req.body.roomName + ":" + req.body.temperature);
+    myCache.set('pigRoomTemperature', req.body.temperature);
     res.sendStatus(200);
 });
 
