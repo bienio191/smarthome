@@ -33,7 +33,7 @@ $(function worker(){
             var newSunsetTime = formatDate(data.sunsetTime);
             var newBulbState = data.pigBulbState ? 'On' : 'Off';
             var newBulbBri = data.pigBulbBrightness;
-            var newPigTemperature = data.pigRoomTemperature;
+            var newPigTemperature = data.pigRoomTemperature + ' °C';
 
             if(detectChange('lastSeen', newLastSeen)) {
                 animate($("#lastSeen"), 6);
