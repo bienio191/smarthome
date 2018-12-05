@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 app.use(express.static(__dirname + '/public'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 app.use('/api', router);
 
 //standard routing
@@ -73,7 +73,9 @@ app.post('/api/temperatures').post( (req, res) => {
 
 router.route('/temperatures').post( (req, res) => {
     logger.log('Temperature called');
-    logger.log(req.body);
+    logger.log(req.body.roomName);
+    logger.log(JSON.stringify(req.body));
+    logger.log(JSON.parse(req.body));
     res.sendStatus(200);
 });
 
