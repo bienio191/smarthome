@@ -13,8 +13,7 @@ const utils = require('./utils.js');
 const myCache = new Cache();
 
 //express inits
-var app = express();
-var router = express.Router(); 
+var app = express();; 
 hbs.registerPartials(__dirname + '/views/partials');
 app.set('view engine', 'hbs');
 
@@ -22,7 +21,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api', router);
 app.use(express.static(__dirname + '/public'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 
@@ -64,17 +62,19 @@ app.get('/cache', (req, res) => {
     res.send(JSON.stringify(utils.strMapToObj(myMap)));
 });
 
-//routing with express router
-
-app.get('/api', (req, res) => {
-    var keys =  myCache.keys();
-    var myMap = new Map();
-    for(var i=0; i<keys.length; i++) {
-        myMap.set(keys[i], myCache.get(keys[i]));
-    }
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(utils.strMapToObj(myMap)));
+app.post('/api//temperatures').post( (req, res) => {
+    logger.log('Temperature called');
+    logger.log(JSON.stringify(req.body));
+    res.sendStatus(200);
 });
+
+// router.route('/temperatures').post( (req, res) => {
+//     logger.log('Temperature called');
+//     logger.log(JSON.stringify(req.body));
+//     res.sendStatus(200);
+// });
+
+//routing with express router
 
 router.route('/temperatures').post( (req, res) => {
     logger.log('Temperature called');
