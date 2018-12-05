@@ -62,7 +62,7 @@ app.get('/cache', (req, res) => {
     res.send(JSON.stringify(utils.strMapToObj(myMap)));
 });
 
-app.post('/api//temperatures').post( (req, res) => {
+app.post('/api/temperatures').post( (req, res) => {
     logger.log('Temperature called');
     logger.log(JSON.stringify(req.body));
     res.sendStatus(200);
@@ -73,14 +73,6 @@ app.post('/api//temperatures').post( (req, res) => {
 //     logger.log(JSON.stringify(req.body));
 //     res.sendStatus(200);
 // });
-
-//routing with express router
-
-router.route('/temperatures').post( (req, res) => {
-    logger.log('Temperature called');
-    logger.log(JSON.stringify(req.body));
-    res.sendStatus(200);
-});
 
 
 /////////////
