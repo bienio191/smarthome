@@ -14,6 +14,7 @@ const myCache = new Cache();
 
 //express inits
 var app = express();
+var router = express.Router(); 
 hbs.registerPartials(__dirname + '/views/partials');
 app.set('view engine', 'hbs');
 
@@ -21,11 +22,12 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/api', router);
 app.use(express.static(__dirname + '/public'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 
 
-//routing
+//standard routing
 app.get('/', (req, res) => {
     res.render('home.hbs', {
         pageTitle: 'Home Page'
@@ -60,6 +62,23 @@ app.get('/cache', (req, res) => {
     }
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(utils.strMapToObj(myMap)));
+});
+
+//routing with express router
+
+app.get('/api', (req, res) => {
+    var keys =  myCache.keys();
+    var myMap = new Map();
+    for(var i=0; i<keys.length; i++) {
+        myMap.set(keys[i], myCache.get(keys[i]));
+    }
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(utils.strMapToObj(myMap)));
+});
+
+router.route('/temperatures').post( (req, res) => {
+    logger.log('Temperature called');
+    logger.log(res);
 });
 
 

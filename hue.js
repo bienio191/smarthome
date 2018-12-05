@@ -10,6 +10,7 @@ var setStateAsync = function(id, state) {
             method: 'PUT',
             json: {"on": state}
         }, (error, response, body) => {
+            logger.log(JSON.stringify(body));
             if(error || JSON.stringify(body).includes('error')) {
                reject('Error thrown from setState');
             } else {
