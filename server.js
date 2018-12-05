@@ -68,6 +68,7 @@ app.get('/cache', (req, res) => {
 router.route('/temperatures').post( (req, res) => {
     logger.log('Temperature called');
     logger.log(req.body.roomName + ":" + req.body.temperature);
+    res.sendStatus(200);
 });
 
 
