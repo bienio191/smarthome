@@ -1,7 +1,7 @@
 const schedule = require('node-schedule');
 const express = require('express');
 const hbs = require('hbs');
-const parser = require('body-parser');
+const bodyParser = require('body-parser');
 const Cache = require('node-cache');
 
 const sun = require('./sun.js');
@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 app.use(express.static(__dirname + '/public'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
-app.use(parser);
+app.use(bodyParser.json())
 app.use('/api', router);
 
 //standard routing
