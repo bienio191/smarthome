@@ -79,6 +79,10 @@ app.get('/api', (req, res) => {
 router.route('/temperatures').post( (req, res) => {
     logger.log('Temperature called');
     logger.log(JSON.stringify(res.body));
+    logger.log(JSON.stringify(res));
+    logger.log(res.body);
+    logger.log(res);
+    res.sendStatus(200);
 });
 
 
